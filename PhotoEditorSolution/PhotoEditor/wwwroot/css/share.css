@@ -1,0 +1,21 @@
+﻿.vertical-box,
+.vertical-full-scale-box, .horisontal-full-scale-box {
+    display: flex;
+    align-items: center;
+}
+
+.vertical-box,
+.vertical-full-scale-box {
+    flex-direction: column;
+    justify-content: center;
+}
+
+.horisontal-full-scale-box {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.vertical-full-scale-box, .horisontal-full-scale-box {
+    height: 100%;
+    width: 100%;
+}

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoEditor.Interface", "PhotoEditor\PhotoEditor.Interface.csproj", "{9E55E546-C5C5-4BD9-94C7-D8C4ADAE81D0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoEditor.Effects", "BloomEffect\PhotoEditor.Effects.csproj", "{5B3F6307-09F8-472A-8668-506C52D027E6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E55E546-C5C5-4BD9-94C7-D8C4ADAE81D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E55E546-C5C5-4BD9-94C7-D8C4ADAE81D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E55E546-C5C5-4BD9-94C7-D8C4ADAE81D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E55E546-C5C5-4BD9-94C7-D8C4ADAE81D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B3F6307-09F8-472A-8668-506C52D027E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B3F6307-09F8-472A-8668-506C52D027E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B3F6307-09F8-472A-8668-506C52D027E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B3F6307-09F8-472A-8668-506C52D027E6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5034B7F6-BF2A-4048-8373-A99C335FE603}
+	EndGlobalSection
+EndGlobal

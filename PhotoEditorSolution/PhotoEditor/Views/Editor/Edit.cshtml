@@ -1,0 +1,17 @@
+﻿@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Formats.Jpeg
+@model (Image Before, Image After);
+
+<div class="vertical-box h-75 w-100 justify-content-between">
+    <div class="blur-result-wrap top-0">
+        <div class="h-100">
+            <p class="text-center caption-text">Original image</p>
+            <img class="img-fluid rounded h-100 me-5" src="@Model.Before.ToBase64String(JpegFormat.Instance)">
+        </div>
+        <div class="h-100">
+            <p class="text-center caption-text">Blurred image</p>
+            <img class="img-fluid rounded h-100" src="@Model.After.ToBase64String(JpegFormat.Instance)">
+        </div>
+    </div>
+    <a class="btn btn-primary w-25 text-uppercase" role="button" asp-controller="Editor" asp-action="Start">Restart</a>
+</div>

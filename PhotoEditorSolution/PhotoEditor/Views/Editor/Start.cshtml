@@ -1,0 +1,21 @@
+﻿<div class="vertical-full-scale-box">
+    <img src="~/content/photographer.gif" class="h-50 w-25" alt="gif-image" />
+
+    @using (Html.BeginForm("Edit", "Editor", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-to-edit" }))
+    {
+        <div class="image-upload-wrap">
+            <input class="file-upload-input" type="file" name="file" onchange="readURL(this)" accept="image/png, image/jpeg" />
+            <div class="drag-text">
+                <h3>Browse a photo</h3>
+            </div>
+        </div>
+
+        <div class="file-upload-content">
+            <img class="file-upload-image rounded" src="#" />
+            <div class="image-action-wrap">
+                <input type="submit" class="btn btn-primary block text-uppercase mb-3" value="Edit" />
+                <button type="button" onclick="removeUpload()" class="btn btn-secondary block text-uppercase">Remove</button>
+            </div>
+        </div>
+    }
+</div>
