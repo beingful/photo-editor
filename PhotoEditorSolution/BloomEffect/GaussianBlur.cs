@@ -3,6 +3,7 @@ using PhotoEditor.Effects.Exceptions;
 using PhotoEditor.Effects.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Collections.Concurrent;
 
 namespace BloomEffect;
 
@@ -29,13 +30,16 @@ public sealed class GaussianBlur
     {
         Image<Rgba32> blurredImage = new(image.Width, image.Height);
 
-        for (int x = 0; x < image.Width; x++)
+        IEnumerable<int> columnIndexes = Enumerable.Range(0, image.Width);
+        OrderablePartitioner<int> columnPartitioner = Partitioner.Create(columnIndexes);
+
+        columnPartitioner.AsParallel().ForAll(x =>
         {
-            for (int y  = 0; y < image.Height; y++)
+            for (int y = 0; y < image.Height; y++)
             {
                 blurredImage[x, y] = ApplyToPixel(target: new Position(x, y), image);
             }
-        }
+        });
 
         return blurredImage;
     }
@@ -44,9 +48,14 @@ public sealed class GaussianBlur
     {
         (float redWeighted, float greenWeighted, float blueWeighted) = (0, 0, 0);
 
-        for (int x = target.X - _weights.Length / 2, i = 0; x <= target.X + _weights.Length / 2 && x < image.Width; x++, i++)
+        int regionStartX = target.X - _weights.Length / 2;
+        int regionEndX = target.X + _weights.Length / 2;
+        int regionStartY = target.Y - _weights.Length / 2;
+        int regionEndY = target.Y + _weights.Length / 2;
+
+        for (int x = regionStartX, i = 0; x <= regionEndX && x < image.Width; x++, i++)
         {
-            for (int y = target.Y - _weights.Length / 2, k = 0; y <= target.Y + _weights.Length / 2 && y < image.Height; y++, k++)
+            for (int y = regionStartY, k = 0; y <= regionEndY && y < image.Height; y++, k++)
             {
                 if (x >= 0 && y >= 0)
                 {
