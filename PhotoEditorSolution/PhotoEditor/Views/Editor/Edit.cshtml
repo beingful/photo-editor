@@ -1,6 +1,8 @@
 ﻿@using SixLabors.ImageSharp
 @using SixLabors.ImageSharp.Formats.Jpeg
-@model (Image Before, Image After);
+@using SixLabors.ImageSharp.PixelFormats
+
+@model (Image<Rgba32> Before, Image<Rgba32> After);
 
 <div class="vertical-box h-75 w-100 justify-content-between">
     <div class="blur-result-wrap top-0">

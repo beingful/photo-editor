@@ -1,5 +1,6 @@
 using BloomEffect;
 using Microsoft.AspNetCore.Mvc;
+using PhotoEditor.Effects;
 using PhotoEditor.Models.Request;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -30,12 +31,13 @@ namespace PhotoEditor.Controllers
             await imageRequest.File.CopyToAsync(memoryStream);
             memoryStream.Position = 0;
 
-            GaussianBlur blur = new(15);
+            GaussianBlur blur = new(10);
+            AdaptiveGaussianThresholding adaptiveGaussianThresholding = new(blur);
 
             Image<Rgba32> originalImage = await Image.LoadAsync<Rgba32>(memoryStream);
-            Image imageBlurred = blur.ApplyAsync(originalImage);
+            Image<Rgba32> binarizedImage = adaptiveGaussianThresholding.Apply(originalImage);
 
-            return View((Before: (Image)originalImage, After: imageBlurred));
+            return View((Before: originalImage, After: binarizedImage));
         }
     }
 }

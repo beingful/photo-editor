@@ -9,14 +9,14 @@ namespace BloomEffect;
 
 public sealed class GaussianBlur
 {
-    private float[][] _weights;
+    private readonly float[][] _weights;
 
     public GaussianBlur(int radius = 1)
     {
         _weights = new GaussianKernel(radius).Calculate();
     }
 
-    public Image<Rgba32> ApplyAsync(Image<Rgba32> image)
+    public Image<Rgba32> Apply(Image<Rgba32> image)
     {
         if (MatchesWithGaussianMatrix(image) == false)
         {
