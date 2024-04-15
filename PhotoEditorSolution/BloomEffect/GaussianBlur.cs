@@ -1,11 +1,10 @@
-﻿using PhotoEditor.Effects;
-using PhotoEditor.Effects.Exceptions;
+﻿using PhotoEditor.Effects.Exceptions;
 using PhotoEditor.Effects.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Concurrent;
 
-namespace BloomEffect;
+namespace PhotoEditor.Effects;
 
 public sealed class GaussianBlur
 {

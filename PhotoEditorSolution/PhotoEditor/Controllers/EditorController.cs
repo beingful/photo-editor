@@ -1,4 +1,3 @@
-using BloomEffect;
 using Microsoft.AspNetCore.Mvc;
 using PhotoEditor.Effects;
 using PhotoEditor.Models.Request;
@@ -31,13 +30,17 @@ namespace PhotoEditor.Controllers
             await imageRequest.File.CopyToAsync(memoryStream);
             memoryStream.Position = 0;
 
-            GaussianBlur blur = new(10);
-            AdaptiveGaussianThresholding adaptiveGaussianThresholding = new(blur);
-
             Image<Rgba32> originalImage = await Image.LoadAsync<Rgba32>(memoryStream);
-            Image<Rgba32> binarizedImage = adaptiveGaussianThresholding.Apply(originalImage);
 
-            return View((Before: originalImage, After: binarizedImage));
+            GaussianBlur blur = new(12);
+            AdaptiveGaussianThresholding adaptiveGaussianThresholding = new(blur);
+            ScreenBlending screenBlending = new();
+
+            BloomEffect bloomEffect = new(blur, adaptiveGaussianThresholding, screenBlending);
+
+            Image<Rgba32> bloomedImage = bloomEffect.Apply(originalImage);
+
+            return View((Before: originalImage, After: bloomedImage));
         }
     }
 }

@@ -10,7 +10,7 @@ internal sealed class GaussianKernel
     [IntegerValidator(MinValue = 1, MaxValue = 10)]
     private int Radius { get; init; } = 1;
 
-    public GaussianKernel(int radius)
+    public GaussianKernel(int radius = 1)
     {
         Radius = radius;
         _deviation = Math.Max(radius / 2, 1);
