@@ -1,4 +1,4 @@
-﻿namespace PhotoEditor.Models.Request;
+﻿namespace PhotoEditor.Models.Requests;
 
 public sealed class ImageToEditRequest
 {

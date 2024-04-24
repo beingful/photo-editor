@@ -1,12 +1,12 @@
 ﻿using PhotoEditor.Effects.Exceptions;
-using PhotoEditor.Effects.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Concurrent;
+using System.Numerics;
 
 namespace PhotoEditor.Effects;
 
-public sealed class GaussianBlur
+internal sealed class GaussianBlur
 {
     private readonly float[][] _weights;
 
@@ -30,27 +30,30 @@ public sealed class GaussianBlur
         Image<Rgba32> blurredImage = new(image.Width, image.Height);
 
         IEnumerable<int> columnIndexes = Enumerable.Range(0, image.Width);
+        IEnumerable<int> rowIndexes = Enumerable.Range(0, image.Height);
+
         OrderablePartitioner<int> columnPartitioner = Partitioner.Create(columnIndexes);
+        OrderablePartitioner<int> rowPartitioner = Partitioner.Create(rowIndexes);
 
         columnPartitioner.AsParallel().ForAll(x =>
         {
-            for (int y = 0; y < image.Height; y++)
+            rowPartitioner.AsParallel().ForAll(y =>
             {
-                blurredImage[x, y] = ApplyToPixel(target: new Position(x, y), image);
-            }
+                blurredImage[x, y] = ApplyToPixel(new Vector2(x, y), image);
+            });
         });
 
         return blurredImage;
     }
 
-    private Rgba32 ApplyToPixel(Position target, Image<Rgba32> image)
+    private Rgba32 ApplyToPixel(Vector2 center, Image<Rgba32> image)
     {
         (float redWeighted, float greenWeighted, float blueWeighted) = (0, 0, 0);
 
-        int regionStartX = target.X - _weights.Length / 2;
-        int regionEndX = target.X + _weights.Length / 2;
-        int regionStartY = target.Y - _weights.Length / 2;
-        int regionEndY = target.Y + _weights.Length / 2;
+        int regionStartX = (int)center.X - _weights.Length / 2;
+        int regionEndX = (int)center.X + _weights.Length / 2;
+        int regionStartY = (int)center.Y - _weights.Length / 2;
+        int regionEndY = (int)center.Y + _weights.Length / 2;
 
         for (int x = regionStartX, i = 0; x <= regionEndX && x < image.Width; x++, i++)
         {

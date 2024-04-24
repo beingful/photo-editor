@@ -1,5 +1,7 @@
 ﻿.vertical-box,
-.vertical-full-scale-box, .horisontal-full-scale-box {
+.vertical-full-scale-box,
+.horisontal-box,
+.horisontal-full-scale-box {
     display: flex;
     align-items: center;
 }
@@ -10,12 +12,14 @@
     justify-content: center;
 }
 
+.horisontal-box,
 .horisontal-full-scale-box {
     flex-direction: row;
     justify-content: space-between;
 }
 
-.vertical-full-scale-box, .horisontal-full-scale-box {
+.vertical-full-scale-box,
+.horisontal-full-scale-box {
     height: 100%;
     width: 100%;
 }

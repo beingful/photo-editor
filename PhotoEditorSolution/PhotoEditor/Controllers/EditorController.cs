@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PhotoEditor.Effects;
-using PhotoEditor.Models.Request;
+using PhotoEditor.Effects.Models;
+using PhotoEditor.Interface.Models.Requests;
+using PhotoEditor.Models.Requests;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -23,7 +25,7 @@ namespace PhotoEditor.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditAsync([FromForm]ImageToEditRequest imageRequest)
+        public async Task<IActionResult> EditAsync([FromForm]ImageToEditRequest imageRequest, [FromBody]BloomConfigurationRequest bloomConfigurationRequest)
         {
             using var memoryStream = new MemoryStream();
 
@@ -32,11 +34,13 @@ namespace PhotoEditor.Controllers
 
             Image<Rgba32> originalImage = await Image.LoadAsync<Rgba32>(memoryStream);
 
-            GaussianBlur blur = new(12);
-            AdaptiveGaussianThresholding adaptiveGaussianThresholding = new(blur);
-            ScreenBlending screenBlending = new();
-
-            BloomEffect bloomEffect = new(blur, adaptiveGaussianThresholding, screenBlending);
+            BloomEffect bloomEffect = new(new BloomConfiguration
+            {
+                BlurRadius = bloomConfigurationRequest.BlurRadius,
+                DownscalingRatio = bloomConfigurationRequest.DownscalingRatio,
+                Intensity = bloomConfigurationRequest.Intensity,
+                Threashold = bloomConfigurationRequest.Threashold
+            });
 
             Image<Rgba32> bloomedImage = bloomEffect.Apply(originalImage);
 

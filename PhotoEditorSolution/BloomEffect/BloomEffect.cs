@@ -1,47 +1,34 @@
-﻿using SixLabors.ImageSharp;
+﻿using PhotoEditor.Effects.Models;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System.Collections.Concurrent;
 
 namespace PhotoEditor.Effects;
 
-public class BloomEffect
+public sealed class BloomEffect
 {
-    private GaussianBlur _blur;
-    private AdaptiveGaussianThresholding _thresholding;
-    private ScreenBlending _screenBlending;
+    private readonly GaussianBlur _blur;
+    private readonly Downsampling _downsampling;
+    private readonly Thresholding _thresholding;
+    private readonly OneToOneBlending _blending;
 
-    public BloomEffect(GaussianBlur blur, AdaptiveGaussianThresholding thresholding, ScreenBlending screenBlending)
+    public BloomEffect(BloomConfiguration bloomConfiguration)
     {
-        _blur = blur;
-        _thresholding = thresholding;
-        _screenBlending = screenBlending;
+        _blur = new GaussianBlur(bloomConfiguration.BlurRadius);
+        _downsampling = new Downsampling(bloomConfiguration.DownscalingRatio);
+        _thresholding = new Thresholding(bloomConfiguration.Threashold);
+        _blending = new OneToOneBlending(bloomConfiguration.Intensity);
     }
 
     public Image<Rgba32> Apply(Image<Rgba32> image)
     {
-        Image<Rgba32> blurredImage = _blur.Apply(image);
-        Image<Rgba32> binarizedImage = _thresholding.Apply(image);
+        Image<Rgba32> downscaledImage = _downsampling.Apply(image);
+        Image<Rgba32> blurredDownscaledImage = _blur.Apply(downscaledImage);
+        Image<Rgba32> thresholdedImage = _thresholding.Apply(blurredDownscaledImage);
 
-        return BlendImages(image, blurredImage, binarizedImage);
-    }
+        BilinearSampling upsampling = new(image.Width, image.Height);
 
-    private Image<Rgba32> BlendImages(Image<Rgba32> originalImage, Image<Rgba32> blurredImage, Image<Rgba32> binarizedImage)
-    {
-        Image<Rgba32> imageResult = new(originalImage.Width, originalImage.Height);
+        Image<Rgba32> upscaledImage = upsampling.Apply(thresholdedImage);
 
-        IEnumerable<int> columnIndexes = Enumerable.Range(0, imageResult.Width);
-        OrderablePartitioner<int> columnPartitioner = Partitioner.Create(columnIndexes);
-
-        columnPartitioner.AsParallel().ForAll(x =>
-        {
-            for (int y = 0; y < imageResult.Height; y++)
-            {
-                imageResult[x, y] = binarizedImage[x, y].R == 0
-                    ? _screenBlending.Apply(originalImage[x, y], blurredImage[x, y])
-                    : originalImage[x, y];
-            }
-        });
-
-        return imageResult;
+        return _blending.Apply(image, upscaledImage);
     }
 }

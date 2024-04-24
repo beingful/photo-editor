@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 
 namespace PhotoEditor.Effects;
 
-public class AdaptiveGaussianThresholding
+internal class AdaptiveGaussianThresholding
 {
     private GaussianBlur _gaussianBlur;
     private LuminosityMethod _luminosityMethod;
@@ -17,30 +17,9 @@ public class AdaptiveGaussianThresholding
 
     public Image<Rgba32> Apply(Image<Rgba32> image)
     {
-        Image<Rgba32> grayscaleImage = ConvertToGrayscale(image);
-        Image<Rgba32> blurredGrayscaleImage = _gaussianBlur.Apply(grayscaleImage);
+        Image<Rgba32> blurredGrayscaleImage = _gaussianBlur.Apply(image);
 
-        return GetBinarizedImage(grayscaleImage, blurredGrayscaleImage);
-    }
-
-    private Image<Rgba32> ConvertToGrayscale(Image<Rgba32> image)
-    {
-        Image<Rgba32> grayscaleImage = new(image.Width, image.Height);
-
-        IEnumerable<int> columnIndexes = Enumerable.Range(0, image.Width);
-        OrderablePartitioner<int> columnPartitioner = Partitioner.Create(columnIndexes);
-
-        columnPartitioner.AsParallel().ForAll(x =>
-        {
-            for (int y = 0; y < image.Height; y++)
-            {
-                byte grey = (byte)_luminosityMethod.Calculate(image[x, y]);
-
-                grayscaleImage[x, y] = new Rgba32(r: grey, g: grey, b: grey);
-            }
-        });
-
-        return grayscaleImage;
+        return GetBinarizedImage(image, blurredGrayscaleImage);
     }
 
     private Image<Rgba32> GetBinarizedImage(Image<Rgba32> image, Image<Rgba32> blurredImage)

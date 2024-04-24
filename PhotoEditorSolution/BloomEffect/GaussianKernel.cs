@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+﻿using System.Numerics;
 
 namespace PhotoEditor.Effects;
 
@@ -7,12 +7,8 @@ internal sealed class GaussianKernel
     private readonly float _deviation;
     private readonly int _kernelSize;
 
-    [IntegerValidator(MinValue = 1, MaxValue = 10)]
-    private int Radius { get; init; } = 1;
-
     public GaussianKernel(int radius = 1)
     {
-        Radius = radius;
         _deviation = Math.Max(radius / 2, 1);
         _kernelSize = radius * 2 + 1;
     }
@@ -30,13 +26,15 @@ internal sealed class GaussianKernel
     {
         float[][] weights = new float[_kernelSize][];
 
-        for (int y = 0; y < weights.Length; y++)
-        {
-            weights[y] = new float[_kernelSize];
+        int kernelRadius = (_kernelSize - 1) / 2;
 
-            for (int x = 0; x < weights[y].Length; x++)
+        for (int x = 0; x < weights.Length; x++)
+        {
+            weights[x] = new float[_kernelSize];
+
+            for (int y = 0; y < weights[x].Length; y++)
             {
-                weights[y][x] = CalculateWeight(y - Radius, x - Radius);
+                weights[x][y] = CalculateWeight(new Vector2(x - kernelRadius, y - kernelRadius));
             }
         }
 
@@ -56,9 +54,9 @@ internal sealed class GaussianKernel
         }
     }
 
-    private float CalculateWeight(float x, float y)
+    private float CalculateWeight(Vector2 position)
     {
-        double exponent = ((x * x) + (y * y)) / (2 * _deviation * _deviation);
+        double exponent = ((position.X * position.X) + (position.Y * position.Y)) / (2 * _deviation * _deviation);
         double gaussianNumerator = Math.Exp(-exponent);
         double gaussianDenominator = 2 * Math.PI * _deviation * _deviation;
 

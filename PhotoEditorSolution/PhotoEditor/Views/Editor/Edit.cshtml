@@ -7,11 +7,11 @@
 <div class="vertical-box h-75 w-100 justify-content-between">
     <div class="blur-result-wrap top-0">
         <div class="h-100">
-            <p class="text-center caption-text">Original image</p>
+            <p class="w-100 text-center caption-text">Original</p>
             <img class="img-fluid rounded h-100 me-5" src="@Model.Before.ToBase64String(JpegFormat.Instance)">
         </div>
         <div class="h-100">
-            <p class="text-center caption-text">Blurred image</p>
+            <p class="w-100 text-center caption-text">Bloomed</p>
             <img class="img-fluid rounded h-100" src="@Model.After.ToBase64String(JpegFormat.Instance)">
         </div>
     </div>

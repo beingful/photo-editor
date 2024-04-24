@@ -28,6 +28,7 @@
 }
 
 .image-action-wrap {
+    height: 30%;
     width: 100%;
     position: absolute;
     bottom: 0;
@@ -42,13 +43,13 @@
 
 .drag-text h3 {
     font-weight: 100;
-    font-size: 2rem;
+    font-size: 2em;
     text-transform: uppercase;
     color: white;
 }
 
 .file-upload-image {
-    max-height: 75%;
+    max-height: 65%;
     max-width: 100%;
     box-shadow: 0 2px 15px -3px;
 }
@@ -61,7 +62,7 @@
 }
 
 .block {
-    height: 25%;
+    height: 30%;
     display: block;
     width: 100%;
 }
