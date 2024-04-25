@@ -3,31 +3,8 @@
 
         var reader = new FileReader();
 
-        reader.onload = function (e) {
-            $('.image-upload-wrap').removeClass('image-dropping').hide();
-            $('img[alt="gif-image"]').hide();
-            $('.file-upload-image').attr('src', e.target.result);
-            $('.file-upload-content').show();
-        };
-
         reader.readAsDataURL(input.files[0]);
 
-    } else {
-        removeUpload();
+        $('#imageForm').trigger('submit');
     }
 }
-
-function removeUpload() {
-    $('.file-upload-content').hide();
-    $('.image-upload-wrap').show();
-    $('img[alt="gif-image"]').show();
-    $('.file-upload-input').val('');
-}
-
-$('.image-upload-wrap').bind('dragover', function () {
-    $('.image-upload-wrap').addClass('image-dropping');
-});
-
-$('.image-upload-wrap').bind('dragleave', function () {
-    $('.image-upload-wrap').removeClass('image-dropping');
-});

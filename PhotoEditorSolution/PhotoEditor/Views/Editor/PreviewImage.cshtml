@@ -1,0 +1,66 @@
+﻿@using System.Text.Json
+@using PhotoEditor.Effects.Models
+@using PhotoEditor.Interface.ViewModels
+
+@{
+    string imageBase64 = Convert.ToBase64String(Model.Image);
+}
+
+@model PreviewImageViewModel
+
+<div class="vertical-full-scale-box">
+    @using (Html.BeginForm("EditImage", "Editor", FormMethod.Post, new { id = "editForm", enctype = "multipart/form-data", @class = "form-to-edit" }))
+    {
+        <div class="file-upload-content">
+            <img class="file-upload-image rounded" type="file" src="@String.Format("data:image/png;base64,{0}", imageBase64)" />
+
+            <input type="file" id="fileInput" name="file" hidden />
+
+            <div class="image-action-wrap">
+                <input type="button" class="btn btn-primary block text-uppercase mb-3" onclick="loadImage('editForm')" value="Edit" />
+
+                <button type="button" class="btn btn-info block text-uppercase text-white mb-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    Adjust bloom
+                </button>
+
+                <a class="btn btn-secondary block text-uppercase" role="button" asp-controller="Editor" asp-action="Start">Remove</a>
+            </div>
+
+            <div class="offcanvas offcanvas-end top-0 bg-dark text-white" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5 id="offcanvasRightLabel" class="text-uppercase">Bloom configuration</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+
+                <div class="offcanvas-body">
+                    <label for="blurRange" class="form-label">Gaussian kernel radius:</label>
+                    <div class="horisontal-box">
+                        <input name="blurRadius" type="range" class="form-range" min="0" max="50" value="@Model.BloomConfiguration.BlurRadius" id="blurRange" oninput="blurRangeOutput.value = this.value">
+                        <output id="blurRangeOutput">@Model.BloomConfiguration.BlurRadius</output>
+                    </div>
+
+                    <label for="downscalingRatioRange" class="form-label">Downscaling ratio:</label>
+                    <div class="horisontal-box">
+                        <input name="downscalingRatio" type="range" class="form-range" min="0" max="20" value="@Model.BloomConfiguration.DownscalingRatio" id="downscalingRatioRange" oninput="downscalingRatioRangeOutput.value = this.value">
+                        <output id="downscalingRatioRangeOutput">@Model.BloomConfiguration.DownscalingRatio</output>
+                    </div>
+
+                    <label for="thresholdRange" class="form-label">Threshold:</label>
+                    <div class="horisontal-box">
+                        <input name="threashold" type="range" class="form-range" min="0" max="255" value="@Model.BloomConfiguration.Threashold" id="thresholdRange" oninput="thresholdRangeOutput.value = this.value">
+                        <output id="thresholdRangeOutput">@Model.BloomConfiguration.Threashold</output>
+                    </div>
+
+                    <label for="intensityRange" class="form-label">Intensity:</label>
+                    <div class="horisontal-box">
+                        <input name="intensity" type="range" class="form-range" min="0" max="2" step="0.1" value="@Model.BloomConfiguration.Intensity" id="intensityRange" oninput="intensityRangeOutput.value = this.value">
+                        <output id="intensityRangeOutput">@Model.BloomConfiguration.Intensity</output>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script>
+    let imageBase64Js = @Html.Raw(JsonSerializer.Serialize(imageBase64));
+</script>

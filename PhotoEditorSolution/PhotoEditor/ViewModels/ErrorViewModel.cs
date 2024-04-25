@@ -1,4 +1,4 @@
-namespace PhotoEditor.Models;
+namespace PhotoEditor.Interface.ViewModels;
 
 public class ErrorViewModel
 {

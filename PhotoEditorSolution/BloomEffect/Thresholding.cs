@@ -34,7 +34,7 @@ public sealed class Thresholding
             });
         });
 
-        return image;
+        return contributedImage;
     }
 
     private Rgba32 ContributedPixel(Rgba32 pixel)

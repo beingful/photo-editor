@@ -1,0 +1,44 @@
+﻿@using PhotoEditor.Interface.ViewModels
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Formats.Jpeg
+@using SixLabors.ImageSharp.PixelFormats
+@using System.Text.Json
+
+@model EditImageViewModel
+
+@{
+    string originalImageBase64 = Model.OriginalImage.ToBase64String(JpegFormat.Instance);
+    string editedImageBase64 = Model.EditedImage.ToBase64String(JpegFormat.Instance);
+}
+
+<div class="vertical-box h-75 w-100 justify-content-between">
+    @using (Html.BeginForm("PreviewImage", "Editor", FormMethod.Post, new { id = "backToPreviewForm", enctype = "multipart/form-data", @class = "vertical-box w-100 h-100" }))
+    {
+        <div class="blur-result-wrap w-100 top-0">
+            <div class="h-100">
+                <p class="w-100 text-center caption-text">Original</p>
+                <img class="img-fluid h-75 rounded me-5" src="@originalImageBase64">
+            </div>
+
+            <div class="h-100">
+                <p class="w-100 text-center caption-text">Bloomed</p>
+                <img class="img-fluid h-75 rounded" src="@editedImageBase64">
+            </div>
+        </div>
+
+        <input type="file" id="fileInput" name="file" hidden />
+        <input type="number" name="blurRadius" value="@Model.BloomConfiguration.BlurRadius" hidden />
+        <input type="number" name="downscalingRatio" value="@Model.BloomConfiguration.DownscalingRatio" hidden />
+        <input type="number" name="threashold" value="@Model.BloomConfiguration.Threashold" hidden />
+        <input type="number" name="intensity" value="@Model.BloomConfiguration.Intensity" hidden />
+
+        <div class="vertical-box w-100 justify-content-between bottom-0">
+            <input type="button" class="btn btn-primary text-uppercase w-25 mb-3" onclick="loadImage('backToPreviewForm')" value="Back" />
+
+            <a class="btn btn-secondary text-uppercase w-25" role="button" asp-controller="Editor" asp-action="Start">Restart</a>
+        </div>
+    }
+</div>
+<script>
+    let imageBase64Js = @Html.Raw(JsonSerializer.Serialize(originalImageBase64.Replace("data:image/jpeg;base64,", string.Empty)));
+</script>

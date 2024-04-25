@@ -1,50 +1,73 @@
 using Microsoft.AspNetCore.Mvc;
 using PhotoEditor.Effects;
 using PhotoEditor.Effects.Models;
-using PhotoEditor.Interface.Models.Requests;
+using PhotoEditor.Interface.ViewModels;
 using PhotoEditor.Models.Requests;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 
-namespace PhotoEditor.Controllers
+namespace PhotoEditor.Controllers;
+
+public class EditorController : Controller
 {
-    public class EditorController : Controller
+    private readonly ILogger<EditorController> _logger;
+
+    public EditorController(ILogger<EditorController> logger)
     {
-        private readonly ILogger<EditorController> _logger;
+        _logger = logger;
+    }
 
-        public EditorController(ILogger<EditorController> logger)
+    [HttpGet]
+    public IActionResult Start()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [Route("preview")]
+    public async Task<IActionResult> PreviewImageAsync([FromForm] ImageToEditRequest imageToEditRequest)
+    {
+        using var memoryStream = new MemoryStream();
+
+        await imageToEditRequest.File.CopyToAsync(memoryStream);
+
+        byte[] image = memoryStream.ToArray();
+
+        BloomConfiguration bloomConfiguration = new()
         {
-            _logger = logger;
-        }
+            BlurRadius = imageToEditRequest.BlurRadius,
+            DownscalingRatio = imageToEditRequest.DownscalingRatio,
+            Intensity = (float)imageToEditRequest.Intensity,
+            Threashold = imageToEditRequest.Threashold
+        };
 
-        [HttpGet]
-        public IActionResult StartAsync()
+        return View(new PreviewImageViewModel(imageToEditRequest.File, image, bloomConfiguration));
+    }
+
+    [HttpPost]
+    [Route("edit")]
+    public async Task<IActionResult> EditImageAsync([FromForm]ImageToEditRequest imageToEditRequest)
+    {
+        using var memoryStream = new MemoryStream();
+
+        await imageToEditRequest.File.CopyToAsync(memoryStream);
+        memoryStream.Position = 0;
+
+        Image<Rgba32> originalImage = await Image.LoadAsync<Rgba32>(memoryStream);
+
+        BloomConfiguration bloomConfiguration = new()
         {
-            return View();
-        }
+            BlurRadius = imageToEditRequest.BlurRadius,
+            DownscalingRatio = imageToEditRequest.DownscalingRatio,
+            Intensity = (float)imageToEditRequest.Intensity,
+            Threashold = imageToEditRequest.Threashold
+        };
 
-        [HttpPost]
-        public async Task<IActionResult> EditAsync([FromForm]ImageToEditRequest imageRequest, [FromBody]BloomConfigurationRequest bloomConfigurationRequest)
-        {
-            using var memoryStream = new MemoryStream();
+        BloomEffect bloomEffect = new(bloomConfiguration);
 
-            await imageRequest.File.CopyToAsync(memoryStream);
-            memoryStream.Position = 0;
+        Image<Rgba32> bloomedImage = bloomEffect.Apply(originalImage);
 
-            Image<Rgba32> originalImage = await Image.LoadAsync<Rgba32>(memoryStream);
-
-            BloomEffect bloomEffect = new(new BloomConfiguration
-            {
-                BlurRadius = bloomConfigurationRequest.BlurRadius,
-                DownscalingRatio = bloomConfigurationRequest.DownscalingRatio,
-                Intensity = bloomConfigurationRequest.Intensity,
-                Threashold = bloomConfigurationRequest.Threashold
-            });
-
-            Image<Rgba32> bloomedImage = bloomEffect.Apply(originalImage);
-
-            return View((Before: originalImage, After: bloomedImage));
-        }
+        return View(new EditImageViewModel(originalImage, bloomedImage, bloomConfiguration));
     }
 }
