@@ -42,11 +42,10 @@ internal sealed class BilinearSampling
 
     private Rgba32 InterpolatePixel(Vector2 resizedPosition, float xScale, float yScale, Image<Rgba32> image)
     {
-        float xOriginal = resizedPosition.X / xScale;
-        float yOriginal = resizedPosition.Y / yScale;
+        Vector2 originalPixelPosition = new(x: resizedPosition.X / xScale, y: resizedPosition.Y / yScale);
 
-        int xLeft = (int)Math.Floor(xOriginal);
-        int yTop = (int)Math.Floor(yOriginal);
+        int xLeft = (int)Math.Floor(originalPixelPosition.X);
+        int yTop = (int)Math.Floor(originalPixelPosition.Y);
         int xRight = Math.Min(xLeft + 1, image.Width - 1);
         int yBottom = Math.Min(yTop + 1, image.Height - 1);
 
@@ -65,8 +64,8 @@ internal sealed class BilinearSampling
         }
         else
         {
-            topTwoPixelInterpolationResult = ApplyHorizontalInterpolation(topLeftPixel, topRightPixel, xLeft, xRight, xOriginal);
-            bottomTwoPixelInterpolationResult = ApplyHorizontalInterpolation(bottomLeftPixel, bottomRightPixel, xLeft, xRight, xOriginal);
+            topTwoPixelInterpolationResult = ApplyHorizontalInterpolation(topLeftPixel, topRightPixel, xLeft, xRight, originalPixelPosition.X);
+            bottomTwoPixelInterpolationResult = ApplyHorizontalInterpolation(bottomLeftPixel, bottomRightPixel, xLeft, xRight, originalPixelPosition.X);
         }
 
         Rgba32 pixelResult;
@@ -77,7 +76,7 @@ internal sealed class BilinearSampling
         }
         else
         {
-            pixelResult = ApplyVerticalInterpolation(topTwoPixelInterpolationResult, bottomTwoPixelInterpolationResult, yTop, yBottom, yOriginal);
+            pixelResult = ApplyVerticalInterpolation(topTwoPixelInterpolationResult, bottomTwoPixelInterpolationResult, yTop, yBottom, originalPixelPosition.Y);
         }
 
         return pixelResult;

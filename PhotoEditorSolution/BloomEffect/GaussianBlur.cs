@@ -8,11 +8,11 @@ namespace PhotoEditor.Effects;
 
 internal sealed class GaussianBlur
 {
-    private readonly float[][] _weights;
+    private readonly float[] _kernelBasis;
 
     public GaussianBlur(int radius = 1)
     {
-        _weights = new GaussianKernel(radius).Calculate();
+        _kernelBasis = new GaussianKernel(radius).CalculateBasis();
     }
 
     public Image<Rgba32> Apply(Image<Rgba32> image)
@@ -27,53 +27,88 @@ internal sealed class GaussianBlur
 
     public Image<Rgba32> ApplyToImage(Image<Rgba32> image)
     {
-        Image<Rgba32> blurredImage = new(image.Width, image.Height);
-
         IEnumerable<int> columnIndexes = Enumerable.Range(0, image.Width);
         IEnumerable<int> rowIndexes = Enumerable.Range(0, image.Height);
 
         OrderablePartitioner<int> columnPartitioner = Partitioner.Create(columnIndexes);
         OrderablePartitioner<int> rowPartitioner = Partitioner.Create(rowIndexes);
 
+        Vector3[,] verticallyBlurredImage = new Vector3[image.Width, image.Height];
+
         columnPartitioner.AsParallel().ForAll(x =>
         {
             rowPartitioner.AsParallel().ForAll(y =>
             {
-                blurredImage[x, y] = ApplyToPixel(new Vector2(x, y), image);
+                verticallyBlurredImage[x, y] = ApplyVertically(new Vector2(x, y), image);
             });
         });
 
-        return blurredImage;
+        Image<Rgba32> blurredImageResult = new(image.Width, image.Height);
+
+        columnPartitioner.AsParallel().ForAll(x =>
+        {
+            rowPartitioner.AsParallel().ForAll(y =>
+            {
+                blurredImageResult[x, y] = ApplyHorizontally(new Vector2(x, y), verticallyBlurredImage);
+            });
+        });
+
+        return blurredImageResult;
     }
 
-    private Rgba32 ApplyToPixel(Vector2 center, Image<Rgba32> image)
+    private Vector3 ApplyVertically(Vector2 center, Image<Rgba32> image)
     {
         (float redWeighted, float greenWeighted, float blueWeighted) = (0, 0, 0);
 
-        int regionStartX = (int)center.X - _weights.Length / 2;
-        int regionEndX = (int)center.X + _weights.Length / 2;
-        int regionStartY = (int)center.Y - _weights.Length / 2;
-        int regionEndY = (int)center.Y + _weights.Length / 2;
+        int pixelNeighbouhoodStart = (int)center.Y - (_kernelBasis.Length / 2);
+        int pixelNeighbouhoodEnd = (int)center.Y + (_kernelBasis.Length / 2);
 
-        for (int x = regionStartX, i = 0; x <= regionEndX && x < image.Width; x++, i++)
+        int leftBound = Math.Max(pixelNeighbouhoodStart, 0);
+        int rightBound = Math.Min(pixelNeighbouhoodEnd, image.Height - 1);
+
+        int kernelStart = leftBound - pixelNeighbouhoodStart;
+
+        for (int y = leftBound, i = kernelStart; y <= rightBound; y++, i++)
         {
-            for (int y = regionStartY, k = 0; y <= regionEndY && y < image.Height; y++, k++)
-            {
-                if (x >= 0 && y >= 0)
-                {
-                    float weight = _weights[k][i];
-                    Rgba32 pixel = image[x, y];
+            Rgba32 pixel = image[(int)center.X, y];
+            float weight = _kernelBasis[i];
 
-                    redWeighted += pixel.R * weight;
-                    greenWeighted += pixel.G * weight;
-                    blueWeighted += pixel.B * weight;
-                }
-            }
+            redWeighted += pixel.R * weight;
+            greenWeighted += pixel.G * weight;
+            blueWeighted += pixel.B * weight;
         }
 
-        return new Rgba32(r: (byte)redWeighted, g: (byte)greenWeighted, b: (byte)blueWeighted);
+        return new Vector3(x: redWeighted, y: greenWeighted, z: blueWeighted);
+    }
+
+    private Rgba32 ApplyHorizontally(Vector2 center, Vector3[,] image)
+    {
+        Vector3 bluredPixel = new();
+
+        int pixelNeighbouhoodStart = (int)center.X - (_kernelBasis.Length / 2);
+        int pixelNeighbouhoodEnd = (int)center.X + (_kernelBasis.Length / 2);
+
+        int leftBound = Math.Max(pixelNeighbouhoodStart, 0);
+        int rightBound = Math.Min(pixelNeighbouhoodEnd, image.GetLength(0) - 1);
+
+        int kernelStart = leftBound - pixelNeighbouhoodStart;
+
+        for (int x = leftBound, i = kernelStart; x <= rightBound; x++, i++)
+        {
+            Vector3 pixel = image[x, (int)center.Y];
+            float weight = _kernelBasis[i];
+
+            bluredPixel.X += pixel.X * weight;
+            bluredPixel.Y += pixel.Y * weight;
+            bluredPixel.Z += pixel.Z * weight;
+        }
+
+       return new Rgba32(
+           r: (byte)Math.Round(bluredPixel.X),
+           g: (byte)Math.Round(bluredPixel.Y),
+           b: (byte)Math.Round(bluredPixel.Z));
     }
 
     public bool MatchesWithGaussianMatrix(Image image) =>
-        image.Width >= _weights.Length && image.Height >= _weights.Length;
+        image.Width >= _kernelBasis.Length && image.Height >= _kernelBasis.Length;
 }

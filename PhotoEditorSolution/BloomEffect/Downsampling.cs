@@ -60,9 +60,7 @@ internal sealed class Downsampling
 
     private Rgba32 GetAveragedPixel(Vector2 startPosition, Image<Rgba32> image)
     {
-        int totalRed = 0;
-        int totalGreen = 0;
-        int totalBlue = 0;
+        Vector3 totalColor = new();
 
         for (int i = 0; i < _ratio; i++)
         {
@@ -70,15 +68,15 @@ internal sealed class Downsampling
             {
                 Rgba32 pixel = image[(int)startPosition.X + i, (int)startPosition.Y + j];
 
-                totalRed += pixel.R;
-                totalGreen += pixel.G;
-                totalBlue += pixel.B;
+                totalColor.X += pixel.R;
+                totalColor.Y += pixel.G;
+                totalColor.Z += pixel.B;
             }
         }
 
         return new Rgba32(
-            r: (byte)(totalRed / (_ratio * _ratio)),
-            g: (byte)(totalGreen / (_ratio * _ratio)),
-            b: (byte)(totalBlue / (_ratio * _ratio)));
+            r: (byte)(totalColor.X / (_ratio * _ratio)),
+            g: (byte)(totalColor.Y / (_ratio * _ratio)),
+            b: (byte)(totalColor.Z / (_ratio * _ratio)));
     }
 }

@@ -18,8 +18,6 @@ public sealed class Thresholding
     {
         Image<Rgba32> contributedImage = new(image.Width, image.Height);
 
-        var x = image.GetPixelMemoryGroup();
-
         IEnumerable<int> columnIndexes = Enumerable.Range(0, image.Width);
         IEnumerable<int> rowIndexes = Enumerable.Range(0, image.Height);
 

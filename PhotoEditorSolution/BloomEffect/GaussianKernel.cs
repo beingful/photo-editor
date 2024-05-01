@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace PhotoEditor.Effects;
+﻿namespace PhotoEditor.Effects;
 
 internal sealed class GaussianKernel
 {
@@ -13,50 +11,42 @@ internal sealed class GaussianKernel
         _kernelSize = radius * 2 + 1;
     }
 
-    public float[][] Calculate()
+    public float[] CalculateBasis()
     {
-        float[][] kernel = CalculteKernel();
+        float[] kernel = Calculate();
 
-        NormalizeKernel(kernel);
+        Normalize(kernel);
 
         return kernel;
     }
 
-    private float[][] CalculteKernel()
+    private float[] Calculate()
     {
-        float[][] weights = new float[_kernelSize][];
+        float[] kernalBasis = new float[_kernelSize];
 
         int kernelRadius = (_kernelSize - 1) / 2;
 
-        for (int x = 0; x < weights.Length; x++)
+        for (int x = 0; x < kernalBasis.Length; x++)
         {
-            weights[x] = new float[_kernelSize];
-
-            for (int y = 0; y < weights[x].Length; y++)
-            {
-                weights[x][y] = CalculateWeight(new Vector2(x - kernelRadius, y - kernelRadius));
-            }
+            kernalBasis[x] = CalculateWeight(x - kernelRadius);
         }
 
-        return weights;
+        return kernalBasis;
     }
 
-    private void NormalizeKernel(float[][] weights)
+    private void Normalize(float[] basis)
     {
-        float totalWeight = weights.Sum(values => values.Sum());
+        float totalWeight = basis.Sum();
 
-        for (int y = 0; y < weights.Length; y++)
+        for (int i = 0; i < _kernelSize; i++)
         {
-            for (int x = 0; x < weights[y].Length; x++)
-            {
-                weights[y][x] /= totalWeight;
-            }
+            basis[i] /= totalWeight;
         }
     }
 
-    private float CalculateWeight(Vector2 position)
+    private float CalculateWeight(int position)
     {
-        double exponent = ((position.X * position.X) + (position.Y * position.Y)) / (2 * _deviation * _deviation);
+        double exponent = (position * position) / (2 * _deviation * _deviation);
         double gaussianNumerator = Math.Exp(-exponent);
         double gaussianDenominator = 2 * Math.PI * _deviation * _deviation;
 
