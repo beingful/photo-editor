@@ -10,8 +10,11 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'Build'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '**/*.sln'
+    arguments: '-c $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
