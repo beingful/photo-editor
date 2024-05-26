@@ -1,9 +1,16 @@
 using Microsoft.AspNetCore.Localization;
+using StackExchange.Profiling;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddMiniProfiler(options =>
+{
+    options.RouteBasePath = "/profiler";
+    options.ColorScheme = ColorScheme.Dark;
+});
 
 var app = builder.Build();
 
@@ -19,6 +26,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions()
     SupportedCultures = new List<CultureInfo> { new CultureInfo("en-US") },
     SupportedUICultures = new List<CultureInfo> { new CultureInfo("en-US") }
 });
+
+app.UseMiniProfiler();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

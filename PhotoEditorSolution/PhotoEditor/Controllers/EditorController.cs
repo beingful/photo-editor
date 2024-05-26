@@ -66,8 +66,8 @@ public class EditorController : Controller
 
         BloomEffect bloomEffect = new(bloomConfiguration);
 
-        Image<Rgba32> bloomedImage = bloomEffect.Apply(originalImage);
+        Image<Rgba32> bloomed = bloomEffect.Apply(originalImage);
 
-        return View(new EditImageViewModel(originalImage, bloomedImage, bloomConfiguration));
+        return View(new EditImageViewModel(originalImage, bloomed, bloomConfiguration));
     }
 }

@@ -8,5 +8,5 @@ public sealed class BloomConfiguration
 
     public float Intensity { get; init; }
 
-    public byte Threashold { get; init; }
+    public float Threashold { get; init; }
 }

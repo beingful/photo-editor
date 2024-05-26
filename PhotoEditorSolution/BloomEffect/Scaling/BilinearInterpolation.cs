@@ -3,14 +3,14 @@ using SixLabors.ImageSharp;
 using System.Collections.Concurrent;
 using System.Numerics;
 
-namespace PhotoEditor.Effects;
+namespace PhotoEditor.Effects.Scaling;
 
-internal sealed class BilinearSampling
+internal sealed class BilinearInterpolation
 {
     private readonly int _newWidth;
     private readonly int _newHeight;
 
-    public BilinearSampling(int newWidth, int newHeight)
+    public BilinearInterpolation(int newWidth, int newHeight)
     {
         _newWidth = newWidth;
         _newHeight = newHeight;

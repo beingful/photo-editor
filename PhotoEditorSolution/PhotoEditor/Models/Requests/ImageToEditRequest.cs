@@ -8,7 +8,7 @@ public sealed class ImageToEditRequest
 
     public int DownscalingRatio { get; init; } = 16;
 
-    public byte Threashold { get; init; } = 50;
+    public float Threashold { get; init; } = 0.25f;
 
-    public decimal Intensity { get; init; } = 1;
+    public float Intensity { get; init; } = 0.5f;
 }

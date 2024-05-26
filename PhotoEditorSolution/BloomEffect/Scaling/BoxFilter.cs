@@ -4,13 +4,13 @@ using SixLabors.ImageSharp.Processing;
 using System.Collections.Concurrent;
 using System.Numerics;
 
-namespace PhotoEditor.Effects;
+namespace PhotoEditor.Effects.Scaling;
 
-internal sealed class Downsampling
+internal sealed class BoxFilter
 {
     private readonly int _ratio;
-    
-    public Downsampling(int ratio = 8)
+
+    public BoxFilter(int ratio = 8)
     {
         _ratio = ratio;
     }
@@ -39,8 +39,8 @@ internal sealed class Downsampling
 
     private Image<Rgba32> PadOriginalImage(Image<Rgba32> image)
     {
-        int paddedColumns = _ratio - (image.Width % _ratio);
-        int paddedRows = _ratio - (image.Height % _ratio);
+        int paddedColumns = _ratio - image.Width % _ratio;
+        int paddedRows = _ratio - image.Height % _ratio;
 
         int paddedWidth = image.Width + paddedColumns;
         int paddedHeight = image.Height + paddedRows;

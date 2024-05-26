@@ -1,4 +1,4 @@
-﻿namespace PhotoEditor.Effects;
+﻿namespace PhotoEditor.Effects.Blur;
 
 internal sealed class GaussianKernel
 {
@@ -7,7 +7,7 @@ internal sealed class GaussianKernel
 
     public GaussianKernel(int radius = 1)
     {
-        _deviation = Math.Max(radius / 2, 1);
+        _deviation = 0.3f * (radius * 2 * 0.5f - 1) + 0.8f;
         _kernelSize = radius * 2 + 1;
     }
 
@@ -46,7 +46,7 @@ internal sealed class GaussianKernel
 
     private float CalculateWeight(int position)
     {
-        double exponent = (position * position) / (2 * _deviation * _deviation);
+        double exponent = position * position / (2 * _deviation * _deviation);
         double gaussianNumerator = Math.Exp(-exponent);
         double gaussianDenominator = 2 * Math.PI * _deviation * _deviation;
 
