@@ -1,8 +1,3 @@
 namespace PhotoEditor.Interface.ViewModels;
 
-public class ErrorViewModel
-{
-    public string? RequestId { get; set; }
-
-    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-}
+public sealed record class ErrorViewModel(string ErrorMessage);

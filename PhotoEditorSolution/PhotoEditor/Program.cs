@@ -14,17 +14,18 @@ builder.Services.AddMiniProfiler(options =>
 
 var app = builder.Build();
 
+app.UseExceptionHandler("/Error");
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
 app.UseRequestLocalization(new RequestLocalizationOptions()
 {
     DefaultRequestCulture = new RequestCulture("en-US"),
-    SupportedCultures = new List<CultureInfo> { new CultureInfo("en-US") },
-    SupportedUICultures = new List<CultureInfo> { new CultureInfo("en-US") }
+    SupportedCultures = new List<CultureInfo> { new("en-US") },
+    SupportedUICultures = new List<CultureInfo> { new("en-US") }
 });
 
 app.UseMiniProfiler();
