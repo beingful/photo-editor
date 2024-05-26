@@ -10,5 +10,5 @@ public sealed class ImageToEditRequest
 
     public float Threashold { get; init; } = 0.25f;
 
-    public float Intensity { get; init; } = 0.5f;
+    public float Intensity { get; init; } = 0.25f;
 }

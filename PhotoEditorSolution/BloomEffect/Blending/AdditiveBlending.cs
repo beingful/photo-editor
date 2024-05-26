@@ -31,9 +31,9 @@ internal sealed class AdditiveBlending
                 Rgba32 blurredPixel = blurredImage[x, y];
 
                 imageResult[x, y] = new Rgba32(
-                    r: (byte)Math.Min(originalPixel.R + 2 * _colorIntensityRate * blurredPixel.R, byte.MaxValue),
-                    g: (byte)Math.Min(originalPixel.G + 2 * _colorIntensityRate * blurredPixel.G, byte.MaxValue),
-                    b: (byte)Math.Min(originalPixel.B + 2 * _colorIntensityRate * blurredPixel.B, byte.MaxValue));
+                    r: (byte)Math.Min(originalPixel.R + 7 * _colorIntensityRate * blurredPixel.R, byte.MaxValue),
+                    g: (byte)Math.Min(originalPixel.G + 7 * _colorIntensityRate * blurredPixel.G, byte.MaxValue),
+                    b: (byte)Math.Min(originalPixel.B + 7 * _colorIntensityRate * blurredPixel.B, byte.MaxValue));
             });
         });
 
