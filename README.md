@@ -11,3 +11,13 @@ It provides a simple way to customize bloom settings, apply it to a photo, and c
 3. Image manipulation: SixLabors.ImageSharp external library.
 4. CI/CD support with Azure DevOps.
 5. Deployed using Azure Web Apps.
+
+## Bloom algorithm
+1. Bilinear interpolation, downscaling.
+2. Gaussian threshold.
+3. Gaussian blur.
+4. Bilinear interpolation, upscaling.
+5. Additive blending.
+
+>[!IMPORTANT]
+>## [Try the app out](https://bloom-effect.azurewebsites.net/)
